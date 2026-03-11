@@ -702,6 +702,7 @@
 
             // RESET CHARGE COUNT FOR NEW QUESTION - START FROM A
             chargeChangeCount = 0;
+            selectedAnswer = null;
             
             const data = currentQuestions[currentIndex];
             document.getElementById('q-text').innerText = data.q;
@@ -711,14 +712,17 @@
             document.getElementById('text-d').innerText = data.d;
             document.getElementById('question-counter').innerText = `${currentIndex + 1}/${currentQuestions.length}`;
             
-            selectedAnswer = null;
+            // Clear all selection/correct/wrong classes
             document.getElementById('opt-a').classList.remove('selected', 'correct', 'wrong');
             document.getElementById('opt-b').classList.remove('selected', 'correct', 'wrong');
             document.getElementById('opt-c').classList.remove('selected', 'correct', 'wrong');
             document.getElementById('opt-d').classList.remove('selected', 'correct', 'wrong');
 
-            // Set initial selection to A
+            // Set initial selection to A and display it
             updateOptionSelection();
+
+            // Make sure button is enabled
+            document.getElementById('confirm-btn').disabled = false;
 
             startTimer();
         }
@@ -779,7 +783,11 @@
         }
 
         function submitAnswer(autoSubmit = false) {
+            // Prevent double-submit
+            if (document.getElementById('confirm-btn').disabled) return;
+            
             clearInterval(timerInterval);
+            document.getElementById('confirm-btn').disabled = true;
 
             const questionData = currentQuestions[currentIndex];
             const isCorrect = selectedAnswer === questionData.correct;
@@ -815,8 +823,6 @@
             document.getElementById('score-counter').innerText = score;
 
             sendAnswerWebhook(questionData, selectedAnswer, isCorrect, autoSubmit);
-
-            document.getElementById('confirm-btn').disabled = true;
 
             setTimeout(() => {
                 currentIndex++;
