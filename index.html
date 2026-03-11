@@ -1,889 +1,908 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VoltQuiz</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #060912;
-    --surface: #0d1424;
-    --border: #1e2d4a;
-    --accent: #00e5ff;
-    --gold: #ffd166;
-    --green: #06ffa5;
-    --red: #ff4d6d;
-    --dim: #4a6080;
-    --text: #e8f4f8;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoltChoice Pro - Hardware Challenge</title>
+    <style>
+        :root {
+            --bg: #0b0f1a;
+            --card: #161b2c;
+            --accent: #38bdf8;
+            --green: #22c55e;
+            --red: #ef4444;
+            --orange: #f97316;
+            --text: #f8fafc;
+            --dark-text: #94a3b8;
+        }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Syne', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-  }
+        body {
+            background: linear-gradient(135deg, var(--bg) 0%, #0f172a 100%);
+            color: var(--text);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
 
-  /* Animated grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--card);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.75);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(56, 189, 248, 0.1);
+        }
 
-  body::after {
-    content: '';
-    position: fixed;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(ellipse at 60% 40%, rgba(0,229,255,0.04) 0%, transparent 60%),
-                radial-gradient(ellipse at 20% 80%, rgba(255,209,102,0.04) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
-    animation: drift 20s ease-in-out infinite alternate;
-  }
+        #timer-bar {
+            position: absolute;
+            top: 0; left: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent), var(--orange));
+            width: 100%;
+            transition: width 0.1s linear;
+        }
 
-  @keyframes drift {
-    from { transform: translate(0,0) rotate(0deg); }
-    to { transform: translate(30px, 20px) rotate(2deg); }
-  }
+        /* LOGIN SCREEN */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            animation: fadeIn 0.6s ease-out;
+        }
 
-  .shell {
-    position: relative;
-    z-index: 1;
-    width: 94%;
-    max-width: 480px;
-  }
+        #login-screen h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-  /* ── SCREENS ── */
-  .screen { display: none; flex-direction: column; gap: 0; }
-  .screen.active { display: flex; }
+        #login-screen p {
+            color: var(--dark-text);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
 
-  /* ── LOGIN ── */
-  #login {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
-    gap: 1.5rem;
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.5s ease;
-  }
+        input {
+            padding: 1rem 1.2rem;
+            border-radius: 0.75rem;
+            border: 2px solid rgba(56, 189, 248, 0.2);
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
 
-  #login::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(15, 23, 42, 1);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+        }
 
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+        /* GAME SCREEN */
+        #game-screen {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
 
-  .logo {
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: var(--accent);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
+        #game-screen h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
 
-  .logo span { color: var(--gold); }
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--dark-text);
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.1);
+        }
 
-  .login-sub {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--dim);
-    line-height: 1.6;
-  }
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
 
-  .field-wrap { display: flex; flex-direction: column; gap: 0.4rem; }
-  .field-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    color: var(--dim);
-    text-transform: uppercase;
-  }
+        .stat-value {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1rem;
+        }
 
-  .field-wrap input {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.9rem 1rem;
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 1rem;
-    letter-spacing: 0.1em;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+        /* BATTERY STATUS */
+        .battery-status {
+            padding: 1rem;
+            background: rgba(56, 189, 248, 0.1);
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            text-align: center;
+        }
 
-  .field-wrap input:focus { border-color: var(--accent); }
+        .battery-status .label {
+            color: var(--dark-text);
+            font-size: 0.85rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
 
-  .btn-primary {
-    background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 10px;
-    padding: 1rem;
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.08em;
-    cursor: pointer;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
+        .battery-status .status {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+            transition: all 0.3s ease;
+        }
 
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(0,229,255,0.3);
-  }
+        .battery-status.charging .status {
+            color: var(--green);
+        }
 
-  .btn-primary:active { transform: translateY(0); }
+        .battery-status.unplugged .status {
+            color: var(--orange);
+        }
 
-  .err {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--red);
-    min-height: 1rem;
-  }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
 
-  /* ── GAME ── */
-  #game {
-    gap: 1rem;
-    animation: fadeUp 0.4s ease;
-  }
+        .option {
+            padding: 1.5rem 1rem;
+            border: 2px solid rgba(56, 189, 248, 0.15);
+            border-radius: 1rem;
+            background: rgba(56, 189, 248, 0.05);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+        }
 
-  .top-bar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 0.9rem 1.2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+        .option.selected {
+            opacity: 1;
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.15);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+        }
 
-  .badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-  }
+        .option.correct {
+            border-color: var(--green);
+            background: rgba(34, 197, 94, 0.15);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+        }
 
-  .score-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--gold);
-    letter-spacing: 0.08em;
-  }
+        .option.wrong {
+            border-color: var(--red);
+            background: rgba(239, 68, 68, 0.15);
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
 
-  /* Timer */
-  .timer-track {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    height: 8px;
-    overflow: hidden;
-    position: relative;
-  }
+        .label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-  .timer-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--gold));
-    border-radius: 10px;
-    transition: width 1s linear, background 0.5s;
-    width: 100%;
-  }
+        .option-text {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+        }
 
-  .timer-fill.danger { background: linear-gradient(90deg, var(--red), #ff8c42); }
+        /* BUTTONS */
+        button {
+            background: linear-gradient(135deg, var(--accent), var(--orange));
+            color: #000;
+            border: none;
+            padding: 1.1rem 1.5rem;
+            font-weight: 700;
+            border-radius: 0.75rem;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-  .timer-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--dim);
-    text-align: right;
-    margin-top: 0.2rem;
-  }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+        }
 
-  /* Question card */
-  .q-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.6rem 1.4rem;
-    position: relative;
-    overflow: hidden;
-  }
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
 
-  .q-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-  .q-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--dim);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 0.6rem;
-  }
+        .error-msg {
+            color: var(--red);
+            font-size: 0.85rem;
+            padding: 0.75rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--red);
+            display: none;
+        }
 
-  .q-text {
-    font-size: 1.05rem;
-    font-weight: 700;
-    line-height: 1.5;
-  }
+        .error-msg.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
 
-  /* Options */
-  .options-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 0.7rem;
-  }
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
 
-  .opt {
-    background: var(--surface);
-    border: 2px solid var(--border);
-    border-radius: 14px;
-    padding: 1rem 0.5rem;
-    text-align: center;
-    transition: border-color 0.25s, background 0.25s, transform 0.2s;
-    cursor: default;
-    position: relative;
-    overflow: hidden;
-  }
+        .hidden { display: none !important; }
 
-  .opt.selected {
-    border-color: var(--accent);
-    background: rgba(0,229,255,0.08);
-    transform: translateY(-2px);
-  }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
-  .opt.selected::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--accent);
-  }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-  .opt-icon {
-    font-size: 1.4rem;
-    margin-bottom: 0.4rem;
-    display: block;
-  }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-  .opt-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    color: var(--dim);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 0.4rem;
-    display: block;
-  }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
 
-  .opt-text {
-    font-size: 0.78rem;
-    font-weight: 700;
-    line-height: 1.3;
-  }
+        .option.selected {
+            animation: pulse 0.6s ease-in-out infinite;
+        }
 
-  /* Charge indicator */
-  .charge-bar {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 0.7rem 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--dim);
-  }
+        .results-container {
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
 
-  .charge-status {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    color: var(--green);
-  }
+        .results-container h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--green), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
 
-  .charge-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--green);
-    animation: pulse 1.5s infinite;
-  }
+        .score-display {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.4; transform: scale(0.8); }
-  }
+        .score-label {
+            color: var(--dark-text);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
 
-  .charge-status.unplugged { color: var(--gold); }
-  .charge-status.unplugged .charge-dot { background: var(--gold); }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
 
-  /* Confirm button */
-  .confirm-btn {
-    background: transparent;
-    border: 2px solid var(--accent);
-    border-radius: 12px;
-    padding: 1rem;
-    color: var(--accent);
-    font-family: 'Syne', sans-serif;
-    font-weight: 700;
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-    text-transform: uppercase;
-  }
+        .summary-item {
+            padding: 1.5rem;
+            background: rgba(56, 189, 248, 0.05);
+            border-radius: 1rem;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
 
-  .confirm-btn:hover {
-    background: rgba(0,229,255,0.1);
-    transform: translateY(-1px);
-  }
+        .summary-item .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
 
-  /* Feedback flash */
-  .feedback {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    text-align: center;
-    min-height: 1.2rem;
-    transition: color 0.2s;
-  }
-
-  .feedback.correct { color: var(--green); }
-  .feedback.wrong { color: var(--red); }
-  .feedback.timeout { color: var(--gold); }
-
-  /* ── END SCREEN ── */
-  #end {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
-    text-align: center;
-    gap: 1.2rem;
-    position: relative;
-    overflow: hidden;
-    animation: fadeUp 0.5s ease;
-  }
-
-  #end::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
-
-  .end-title {
-    font-size: 1.6rem;
-    font-weight: 800;
-    color: var(--gold);
-  }
-
-  .end-score {
-    font-size: 3rem;
-    font-weight: 800;
-    color: var(--accent);
-    font-family: 'DM Mono', monospace;
-    line-height: 1;
-  }
-
-  .end-sub {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--dim);
-    line-height: 1.7;
-  }
-
-  .end-status {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--green);
-    letter-spacing: 0.08em;
-  }
-</style>
+        .summary-item .label {
+            color: var(--dark-text);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+    </style>
 </head>
 <body>
-<div class="shell">
 
-  <!-- LOGIN -->
-  <div id="login" class="screen active">
-    <div class="logo">⚡ Volt<span>Quiz</span></div>
-    <p class="login-sub">Enter your access code to begin. Your device's charge state will determine your answer selection.</p>
-    <div class="field-wrap">
-      <span class="field-label">Access Code</span>
-      <input type="password" id="pass-input" placeholder="••••••••" autocomplete="off">
-    </div>
-    <button class="btn-primary" onclick="attemptLogin()">ENTER THE QUIZ →</button>
-    <div class="err" id="login-err"></div>
-  </div>
+    <div id="tutorial-popup" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 9999;">
+        <div style="background: var(--card); padding: 2rem; border-radius: 1.5rem; max-width: 420px; border: 2px solid var(--accent); text-align: center;">
+            <h2 style="color: var(--accent); margin-bottom: 1.5rem; font-size: 1.5rem;">HOW TO PLAY</h2>
+            
+            <div style="text-align: left; font-size: 0.9rem; line-height: 1.8; color: var(--dark-text); margin-bottom: 1.5rem;">
+                <p style="margin-bottom: 0.8rem;"><strong style="color: var(--accent);">⏱️ Timer:</strong> 10 seconds per question</p>
+                <p style="margin-bottom: 0.8rem;"><strong style="color: var(--accent);">🔄 Cycle:</strong> Options loop A→B→C→D</p>
+                <p style="margin-bottom: 0.8rem;"><strong style="color: var(--accent);">🔌 Status:</strong> Device shows charging info</p>
+                <p style="margin-bottom: 0.8rem;"><strong style="color: var(--accent);">⚡ Action:</strong> Click CONFIRM when right</p>
+            </div>
 
-  <!-- GAME -->
-  <div id="game" class="screen">
-    <div class="top-bar">
-      <span class="badge" id="q-counter">Q 1 / 25</span>
-      <span class="score-badge" id="score-display">Score: 0</span>
-    </div>
+            <div style="background: rgba(56, 189, 248, 0.1); padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; border: 1px solid rgba(56, 189, 248, 0.2);">
+                <p style="color: var(--text); font-size: 0.85rem;">Starting in <span id="countdown" style="color: var(--accent); font-weight: 700; font-size: 1.2rem;">10</span>s</p>
+            </div>
 
-    <div>
-      <div class="timer-track">
-        <div class="timer-fill" id="timer-fill"></div>
-      </div>
-      <div class="timer-label" id="timer-label">10s</div>
+            <button id="skip-btn" style="opacity: 0.3; padding: 0.8rem; font-size: 0.85rem; cursor: not-allowed;" disabled>SKIP (Locked)</button>
+        </div>
     </div>
 
-    <div class="q-card">
-      <div class="q-num" id="q-num">QUESTION 01</div>
-      <div class="q-text" id="q-text">Loading...</div>
+    <div class="container">
+        <div id="timer-bar"></div>
+
+        <!-- LOGIN SCREEN -->
+        <div id="login-screen">
+            <p style="text-align: center; color: var(--accent); font-weight: 700; font-size: 1.2rem; margin-bottom: 1.5rem;">ENTER PASSWORD</p>
+            <p style="text-align: center; color: var(--dark-text); font-size: 0.9rem; margin-bottom: 1.5rem;">Restricted access</p>
+            
+            <div>
+                <label style="font-size: 0.8rem; color: var(--dark-text); text-transform: uppercase; margin-bottom: 0.5rem; display: block;">Password</label>
+                <input type="password" id="pass-input" placeholder="Enter password">
+            </div>
+
+            <div class="error-msg" id="login-err"></div>
+
+            <button onclick="attemptLogin()">START MISSION</button>
+
+            <div style="border-top: 1px solid rgba(56, 189, 248, 0.1); padding-top: 1.5rem; margin-top: 1.5rem;">
+                <p style="color: var(--dark-text); font-size: 0.85rem; margin-bottom: 1rem;">📋 Available Passwords:</p>
+                <div style="background: rgba(56, 189, 248, 0.05); padding: 1rem; border-radius: 0.5rem; text-align: left; font-size: 0.8rem; color: var(--dark-text);">
+                    <p style="margin-bottom: 0.5rem;">admin123</p>
+                    <p style="margin-bottom: 0.5rem;">test456</p>
+                    <p style="margin-bottom: 0.5rem;">user114</p>
+                    <p style="margin-bottom: 0.5rem;">user112</p>
+                    <p style="margin-bottom: 0.5rem;">user985</p>
+                    <p style="margin-bottom: 0.5rem;">user404</p>
+                    <p>user001</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- GAME SCREEN -->
+        <div id="game-screen">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <span class="stat-label">Question</span>
+                    <span class="stat-value" id="question-counter">1/7</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Score</span>
+                    <span class="stat-value" id="score-counter">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Time Left</span>
+                    <span class="stat-value" id="time-counter">10s</span>
+                </div>
+            </div>
+
+            <div class="battery-status" id="battery-status">
+                <span class="label">🔋 Device Status:</span>
+                <span class="status" id="status-text">Detecting...</span>
+            </div>
+
+            <h2 id="q-text" class="question-text">Loading question...</h2>
+            
+            <div class="options-grid">
+                <div id="opt-a" class="option">
+                    <span class="label">Option A</span>
+                    <div class="option-text" id="text-a">Choice A</div>
+                </div>
+                <div id="opt-b" class="option">
+                    <span class="label">Option B</span>
+                    <div class="option-text" id="text-b">Choice B</div>
+                </div>
+                <div id="opt-c" class="option">
+                    <span class="label">Option C</span>
+                    <div class="option-text" id="text-c">Choice C</div>
+                </div>
+                <div id="opt-d" class="option">
+                    <span class="label">Option D</span>
+                    <div class="option-text" id="text-d">Choice D</div>
+                </div>
+            </div>
+
+            <button id="confirm-btn" onclick="submitAnswer()">CONFIRM SELECTION</button>
+        </div>
     </div>
 
-    <div class="options-grid" id="opts-grid">
-      <div class="opt" id="opt-0">
-        <span class="opt-icon">🔌</span>
-        <span class="opt-label">Option A</span>
-        <div class="opt-text" id="opt-text-0">—</div>
-      </div>
-      <div class="opt" id="opt-1">
-        <span class="opt-icon">⚡</span>
-        <span class="opt-label">Option B</span>
-        <div class="opt-text" id="opt-text-1">—</div>
-      </div>
-      <div class="opt" id="opt-2">
-        <span class="opt-icon">🔋</span>
-        <span class="opt-label">Option C</span>
-        <div class="opt-text" id="opt-text-2">—</div>
-      </div>
-    </div>
+    <script>
+        // ==================== CONFIG ====================
+        const DEFAULT_WEBHOOK = "https://discord.com/api/webhooks/1481307096526880778/dQkOHxs0i7ycY9oaSXivMcf-FrnGZ5pzgt8lL0fuSRO2HxGVT8xQRDiwdg2xrkSn1hAP";
+        const TIME_LIMIT = 10;
+        
+        let webhookURL = DEFAULT_WEBHOOK;
 
-    <div class="charge-bar">
-      <span>Device Status</span>
-      <span class="charge-status" id="charge-status">
-        <span class="charge-dot"></span>
-        <span id="charge-text">Detecting...</span>
-      </span>
-    </div>
+        // ==================== DEFAULT DATABASE ====================
+        const DEFAULT_DATABASE = {
+            "admin123": { name: "Admin User", role: "Administrator" },
+            "test456": { name: "Test User", role: "Standard" },
+            "user114": { name: "User 114", role: "Player" },
+            "user112": { name: "User 112", role: "Player" },
+            "user985": { name: "User 985", role: "Player" },
+            "user404": { name: "User 404", role: "Player" },
+            "user001": { name: "User 001", role: "Player" }
+        };
 
-    <div class="feedback" id="feedback"></div>
+        // ==================== DEFAULT QUESTIONS ====================
+        const DEFAULT_QUESTIONS = [
+            {
+                q: "Which sniper rifle cannot use a suppressor?",
+                a: "AWM",
+                b: "M82B",
+                c: "Kar98k",
+                d: "SKS",
+                correct: 'b'
+            },
+            {
+                q: "Which character ability gives movement speed after taking damage?",
+                a: "Kelly",
+                b: "Alok",
+                c: "Jota",
+                d: "Hayato",
+                correct: 'd'
+            },
+            {
+                q: "Which weapon fires 3 bullets per burst?",
+                a: "AN94",
+                b: "FAMAS",
+                c: "XM8",
+                d: "SKS",
+                correct: 'b'
+            },
+            {
+                q: "Which gun has the nickname 'one-tap king' in close fights?",
+                a: "M1887",
+                b: "MP40",
+                c: "UMP",
+                d: "Vector",
+                correct: 'a'
+            },
+            {
+                q: "Which sniper can damage enemies through Gloo Walls?",
+                a: "AWM",
+                b: "M82B",
+                c: "SKS",
+                d: "Kar98k",
+                correct: 'b'
+            },
+            {
+                q: "Which was the first character in Free Fire whose skin color could be changed manually?",
+                a: "Adam",
+                b: "Andrew",
+                c: "Kelly",
+                d: "Maxim",
+                correct: 'a'
+            },
+            {
+                q: "In which map was the heart-shaped (love) island found?",
+                a: "Bermuda",
+                b: "Purgatory",
+                c: "Kalahari",
+                d: "Alpine",
+                correct: 'a'
+            }
+        ];
 
-    <button class="confirm-btn" id="confirm-btn" onclick="submitAnswer()">CONFIRM ANSWER</button>
-  </div>
+        // ==================== GAME STATE ====================
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let timer = TIME_LIMIT;
+        let timerInterval = null;
+        let selectedAnswer = null;
+        let currentUser = "";
+        let userRole = "";
+        let answers = [];
+        let isCharging = false;
+        let batteryCheckInterval = null;
 
-  <!-- END -->
-  <div id="end" class="screen">
-    <div class="end-title">Mission Complete ⚡</div>
-    <div class="end-score" id="end-score">0/25</div>
-    <div class="end-sub" id="end-sub">Calculating results...</div>
-    <div class="end-status" id="end-status">Transmitting data...</div>
-  </div>
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
 
-</div>
+        // ==================== LOGIN ====================
+        function attemptLogin() {
+            const pass = document.getElementById('pass-input').value.trim();
 
-<script>
-// ─────────────────────────────────────────────
-//  CONFIG — fill these in
-// ─────────────────────────────────────────────
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1476964750016647249/yadU-OOi34n4qP_EMi4yLno9oxcZQacbMH2095wJ8RB-imUqLpGK1jG-UftNGdFc3THa";
+            if (!pass) {
+                showError("Please enter password.");
+                return;
+            }
 
-// USER DATABASE — password → { name, questions[] }
-// Each question: { q, opts: [a,b,c], correct: 0|1|2 }
-const USERS = {
-  "alpha123": {
-    name: "Squad Alpha",
-    questions: [
-      { q: "What is the chemical symbol for water?", opts: ["H2O","CO2","NaCl"], correct: 0 },
-      { q: "Which planet is closest to the Sun?", opts: ["Venus","Earth","Mercury"], correct: 2 },
-      { q: "What gas do plants absorb during photosynthesis?", opts: ["Oxygen","Carbon Dioxide","Nitrogen"], correct: 1 },
-      { q: "How many bones are in the adult human body?", opts: ["206","186","226"], correct: 0 },
-      { q: "What is the powerhouse of the cell?", opts: ["Nucleus","Ribosome","Mitochondria"], correct: 2 },
-      { q: "Which planet is known as the Red Planet?", opts: ["Jupiter","Mars","Saturn"], correct: 1 },
-      { q: "What is the speed of light (approx)?", opts: ["300,000 km/s","150,000 km/s","450,000 km/s"], correct: 0 },
-      { q: "What is the atomic number of Carbon?", opts: ["8","6","12"], correct: 1 },
-      { q: "Which organ pumps blood in the human body?", opts: ["Liver","Lungs","Heart"], correct: 2 },
-      { q: "What is the boiling point of water at sea level?", opts: ["90°C","100°C","110°C"], correct: 1 },
-      { q: "Which gas is most abundant in Earth's atmosphere?", opts: ["Oxygen","Nitrogen","Argon"], correct: 1 },
-      { q: "What force keeps us on the ground?", opts: ["Magnetism","Gravity","Friction"], correct: 1 },
-      { q: "What is the hardest natural substance?", opts: ["Gold","Iron","Diamond"], correct: 2 },
-      { q: "What is the chemical symbol for Gold?", opts: ["Go","Gd","Au"], correct: 2 },
-      { q: "How many planets are in our solar system?", opts: ["7","8","9"], correct: 1 },
-      { q: "What type of energy does the Sun produce?", opts: ["Nuclear","Chemical","Kinetic"], correct: 0 },
-      { q: "Which vitamin is produced by sunlight?", opts: ["Vitamin A","Vitamin C","Vitamin D"], correct: 2 },
-      { q: "What is the largest organ in the human body?", opts: ["Liver","Skin","Brain"], correct: 1 },
-      { q: "What is H2O commonly known as?", opts: ["Salt","Water","Acid"], correct: 1 },
-      { q: "Which planet has the most moons?", opts: ["Jupiter","Saturn","Uranus"], correct: 1 },
-      { q: "What does DNA stand for?", opts: ["Deoxyribonucleic Acid","Dynamic Nuclear Acid","Direct Nucleic Array"], correct: 0 },
-      { q: "What is the center of an atom called?", opts: ["Electron","Proton","Nucleus"], correct: 2 },
-      { q: "Which blood type is universal donor?", opts: ["AB+","O-","A+"], correct: 1 },
-      { q: "What is the closest star to Earth?", opts: ["Sirius","Proxima Centauri","The Sun"], correct: 2 },
-      { q: "How many chambers does the human heart have?", opts: ["2","3","4"], correct: 2 },
-    ]
-  },
-  "beta456": {
-    name: "Squad Beta",
-    questions: [
-      { q: "Who wrote Romeo and Juliet?", opts: ["Charles Dickens","William Shakespeare","Mark Twain"], correct: 1 },
-      { q: "Which is the largest country by area?", opts: ["USA","China","Russia"], correct: 2 },
-      { q: "What is the capital of France?", opts: ["Berlin","Paris","Madrid"], correct: 1 },
-      { q: "Which ocean is the largest?", opts: ["Atlantic","Indian","Pacific"], correct: 2 },
-      { q: "Who painted the Mona Lisa?", opts: ["Michelangelo","Leonardo da Vinci","Raphael"], correct: 1 },
-      { q: "In which year did World War II end?", opts: ["1943","1945","1947"], correct: 1 },
-      { q: "What is the longest river in the world?", opts: ["Amazon","Nile","Yangtze"], correct: 1 },
-      { q: "Which country is known as the Land of the Rising Sun?", opts: ["China","South Korea","Japan"], correct: 2 },
-      { q: "How many continents are there on Earth?", opts: ["5","6","7"], correct: 2 },
-      { q: "Who discovered gravity according to legend?", opts: ["Einstein","Newton","Galileo"], correct: 1 },
-      { q: "What is the capital of Australia?", opts: ["Sydney","Melbourne","Canberra"], correct: 2 },
-      { q: "Which instrument has 88 keys?", opts: ["Guitar","Violin","Piano"], correct: 2 },
-      { q: "Who was the first man on the Moon?", opts: ["Buzz Aldrin","Yuri Gagarin","Neil Armstrong"], correct: 2 },
-      { q: "Which is the smallest continent?", opts: ["Europe","Antarctica","Australia"], correct: 2 },
-      { q: "What is the currency of Japan?", opts: ["Yuan","Won","Yen"], correct: 2 },
-      { q: "Which country has the most population?", opts: ["India","China","USA"], correct: 1 },
-      { q: "What language has the most native speakers?", opts: ["English","Mandarin Chinese","Spanish"], correct: 1 },
-      { q: "Who invented the telephone?", opts: ["Thomas Edison","Alexander Graham Bell","Nikola Tesla"], correct: 1 },
-      { q: "Which is the tallest mountain in the world?", opts: ["K2","Kangchenjunga","Mount Everest"], correct: 2 },
-      { q: "What is the national animal of India?", opts: ["Lion","Elephant","Tiger"], correct: 2 },
-      { q: "Which sport is played at Wimbledon?", opts: ["Cricket","Tennis","Badminton"], correct: 1 },
-      { q: "What is the chemical formula for table salt?", opts: ["KCl","NaCl","MgCl2"], correct: 1 },
-      { q: "Which planet is known as the Blue Planet?", opts: ["Neptune","Earth","Uranus"], correct: 1 },
-      { q: "Who invented the light bulb?", opts: ["Nikola Tesla","Thomas Edison","James Watt"], correct: 1 },
-      { q: "How many sides does a hexagon have?", opts: ["5","6","7"], correct: 1 },
-    ]
-  },
-  "admin": {
-    name: "Director",
-    questions: [
-      { q: "What is Newton's Second Law of Motion?", opts: ["F = ma","E = mc²","P = mv"], correct: 0 },
-      { q: "What is the half-life concept used for?", opts: ["Measuring star age","Radioactive decay rate","Cell division speed"], correct: 1 },
-      { q: "Which element has the highest atomic number naturally?", opts: ["Uranium","Plutonium","Thorium"], correct: 0 },
-      { q: "What is the Doppler effect?", opts: ["Light bending","Change in wave frequency due to motion","Sound absorption"], correct: 1 },
-      { q: "What does pH measure?", opts: ["Temperature","Acidity or alkalinity","Electrical charge"], correct: 1 },
-      { q: "Which scientist proposed the theory of evolution?", opts: ["Gregor Mendel","Charles Darwin","Louis Pasteur"], correct: 1 },
-      { q: "What is Avogadro's number (approx)?", opts: ["6.02 × 10²³","3.14 × 10¹⁰","9.8 × 10²²"], correct: 0 },
-      { q: "What is the study of fungi called?", opts: ["Botany","Mycology","Zoology"], correct: 1 },
-      { q: "Which law states energy cannot be created or destroyed?", opts: ["Ohm's Law","Law of Conservation of Energy","Faraday's Law"], correct: 1 },
-      { q: "What is the process by which plants make food?", opts: ["Respiration","Photosynthesis","Transpiration"], correct: 1 },
-      { q: "What is the most abundant element in the universe?", opts: ["Helium","Oxygen","Hydrogen"], correct: 2 },
-      { q: "What causes a rainbow?", opts: ["Reflection only","Refraction and dispersion of light","Diffraction of sound"], correct: 1 },
-      { q: "What is the unit of electric current?", opts: ["Volt","Ohm","Ampere"], correct: 2 },
-      { q: "What type of wave is light?", opts: ["Mechanical","Longitudinal","Electromagnetic"], correct: 2 },
-      { q: "What is the formula for kinetic energy?", opts: ["½mv²","mgh","mv"], correct: 0 },
-      { q: "What is osmosis?", opts: ["Movement of solute","Water across semi-permeable membrane","Cell division"], correct: 1 },
-      { q: "Which planet has the Great Red Spot?", opts: ["Saturn","Neptune","Jupiter"], correct: 2 },
-      { q: "What is the rarest blood type?", opts: ["O-","AB-","B-"], correct: 1 },
-      { q: "What does a seismograph measure?", opts: ["Wind speed","Earthquakes","Ocean depth"], correct: 1 },
-      { q: "What is the chemical symbol for Iron?", opts: ["Ir","In","Fe"], correct: 2 },
-      { q: "How many chromosomes do humans have?", opts: ["23","46","48"], correct: 1 },
-      { q: "What is absolute zero in Celsius?", opts: ["-100°C","-273.15°C","-373.15°C"], correct: 1 },
-      { q: "Which gas is produced during cellular respiration?", opts: ["Nitrogen","Oxygen","Carbon Dioxide"], correct: 2 },
-      { q: "What is the unit of frequency?", opts: ["Watt","Hertz","Pascal"], correct: 1 },
-      { q: "What is the theory of relativity associated with?", opts: ["Newton","Hawking","Einstein"], correct: 2 },
-    ]
-  }
-};
+            if (DEFAULT_DATABASE[pass] && DEFAULT_DATABASE[pass].name) {
+                currentUser = DEFAULT_DATABASE[pass].name;
+                userRole = DEFAULT_DATABASE[pass].role;
 
-// ─────────────────────────────────────────────
-//  STATE
-// ─────────────────────────────────────────────
-let user = null;
-let questions = [];
-let qIndex = 0;
-let score = 0;
-let timerSecs = 10;
-let timerInterval = null;
-let battery = null;
-let chargeChangeCount = 0; // how many charge changes since question started
-let currentSelectedOpt = 0; // 0, 1, or 2
-let answered = false;
+                sendLoginWebhook(pass);
 
-// ─────────────────────────────────────────────
-//  LOGIN WEBHOOK
-// ─────────────────────────────────────────────
-async function sendLoginWebhook(playerName) {
-  const payload = {
-    embeds: [{
-      title: "🟢 Player Started Quiz",
-      color: 0xffd166,
-      fields: [
-        { name: "👤 Player", value: playerName, inline: true },
-        { name: "📅 Time", value: new Date().toLocaleString(), inline: true },
-        { name: "📋 Questions", value: `${questions.length} questions loaded`, inline: true },
-      ],
-      footer: { text: "VoltQuiz System — Session Started" },
-      timestamp: new Date().toISOString()
-    }]
-  };
-  try {
-    await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch(e) { /* silent */ }
-}
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('game-screen').style.display = 'block';
 
-// ─────────────────────────────────────────────
-//  LOGIN
-// ─────────────────────────────────────────────
-document.getElementById('pass-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') attemptLogin();
-});
+                currentIndex = 0;
+                score = 0;
+                selectedAnswer = null;
+                answers = [];
+                currentQuestions = shuffleArray(DEFAULT_QUESTIONS);
 
-async function attemptLogin() {
-  const pass = document.getElementById('pass-input').value.trim();
-  const errEl = document.getElementById('login-err');
-  if (!USERS[pass]) {
-    errEl.textContent = '✗ Invalid access code. Try again.';
-    return;
-  }
-  user = USERS[pass];
-  questions = user.questions;
-  errEl.textContent = '';
-  showScreen('game');
-  await sendLoginWebhook(user.name);
-  await initBattery();
-  loadQuestion();
-}
+                initBatteryMonitoring();
+                nextQuestion();
+            } else {
+                showError("Invalid password. Check the list below.");
+            }
+        }
 
-// ─────────────────────────────────────────────
-//  BATTERY + OPTION CYCLING
-// ─────────────────────────────────────────────
-async function initBattery() {
-  try {
-    battery = await navigator.getBattery();
-    battery.addEventListener('chargingchange', onChargeChange);
-    updateChargeUI();
-    updateSelectedOpt();
-  } catch(e) {
-    // Battery API not available — just stay on option 0
-    document.getElementById('charge-text').textContent = 'No battery API';
-  }
-}
+        function showError(msg) {
+            const err = document.getElementById('login-err');
+            err.innerText = msg;
+            err.classList.add('show');
+            setTimeout(() => err.classList.remove('show'), 4000);
+        }
 
-function onChargeChange() {
-  chargeChangeCount++;
-  // Each charge change cycles to next option
-  currentSelectedOpt = chargeChangeCount % 3;
-  updateChargeUI();
-  updateSelectedOpt();
-}
+        // ==================== WEBHOOK: LOGIN ====================
+        async function sendLoginWebhook(password) {
+            const timestamp = new Date().toLocaleString();
 
-function updateChargeUI() {
-  if (!battery) return;
-  const el = document.getElementById('charge-status');
-  const txt = document.getElementById('charge-text');
-  if (battery.charging) {
-    el.className = 'charge-status';
-    txt.textContent = `Charging — Option ${['A','B','C'][currentSelectedOpt]} selected`;
-  } else {
-    el.className = 'charge-status unplugged';
-    txt.textContent = `Unplugged — Option ${['A','B','C'][currentSelectedOpt]} selected`;
-  }
-}
+            const payload = {
+                embeds: [{
+                    title: "🔐 User Login",
+                    color: 3447003,
+                    fields: [
+                        { name: "Password Used", value: password, inline: true },
+                        { name: "User Name", value: currentUser, inline: true },
+                        { name: "Role", value: userRole, inline: true },
+                        { name: "Timestamp", value: timestamp, inline: false }
+                    ],
+                    footer: { text: "VoltChoice Pro" }
+                }]
+            };
 
-function updateSelectedOpt() {
-  [0,1,2].forEach(i => {
-    document.getElementById(`opt-${i}`).classList.toggle('selected', i === currentSelectedOpt);
-  });
-}
+            try {
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                console.log("✅ Login event sent");
+            } catch (e) {
+                console.warn("⚠️ Could not send login:", e.message);
+            }
+        }
 
-// ─────────────────────────────────────────────
-//  QUESTION LOADING
-// ─────────────────────────────────────────────
-function loadQuestion() {
-  if (qIndex >= questions.length) { finishGame(); return; }
+        // ==================== CYCLING THROUGH OPTIONS ====================
+        let currentCycleIndex = 0;
+        const optionCycle = ['a', 'b', 'c', 'd'];
 
-  answered = false;
-  chargeChangeCount = 0;
-  currentSelectedOpt = 0;
-  updateSelectedOpt();
-  updateChargeUI();
+        function initBatteryMonitoring() {
+            // Set initial charging status
+            isCharging = Math.random() > 0.5;
+            updateBatteryDisplay();
 
-  const q = questions[qIndex];
-  document.getElementById('q-num').textContent = `QUESTION ${String(qIndex+1).padStart(2,'0')}`;
-  document.getElementById('q-text').textContent = q.q;
-  document.getElementById('q-counter').textContent = `Q ${qIndex+1} / ${questions.length}`;
-  document.getElementById('score-display').textContent = `Score: ${score}`;
-  document.getElementById('feedback').textContent = '';
-  document.getElementById('feedback').className = 'feedback';
+            // Cycle through options A-B-C-D continuously
+            startOptionCycle();
 
-  const icons = ['🔌','⚡','🔋'];
-  const labels = ['Option A','Option B','Option C'];
-  q.opts.forEach((txt, i) => {
-    document.querySelector(`#opt-${i} .opt-icon`).textContent = icons[i];
-    document.querySelector(`#opt-${i} .opt-label`).textContent = labels[i];
-    document.getElementById(`opt-text-${i}`).textContent = txt;
-  });
+            // Change charging status randomly every 4-6 seconds
+            batteryCheckInterval = setInterval(() => {
+                isCharging = !isCharging;
+                updateBatteryDisplay();
+                console.log(`🔋 Device status changed to: ${isCharging ? 'CHARGING' : 'UNPLUGGED'}`);
+            }, 4000 + Math.random() * 2000);
+        }
 
-  startTimer();
-}
+        function startOptionCycle() {
+            // Cycle through options every 0.8 seconds
+            setInterval(() => {
+                // Remove selection from all
+                document.getElementById('opt-a').classList.remove('selected');
+                document.getElementById('opt-b').classList.remove('selected');
+                document.getElementById('opt-c').classList.remove('selected');
+                document.getElementById('opt-d').classList.remove('selected');
 
-// ─────────────────────────────────────────────
-//  TIMER
-// ─────────────────────────────────────────────
-function startTimer() {
-  timerSecs = 10;
-  clearInterval(timerInterval);
-  const fill = document.getElementById('timer-fill');
-  const label = document.getElementById('timer-label');
-  fill.style.width = '100%';
-  fill.className = 'timer-fill';
-  label.textContent = '10s';
+                // Select next in cycle
+                selectedAnswer = optionCycle[currentCycleIndex];
+                document.getElementById(`opt-${selectedAnswer}`).classList.add('selected');
 
-  timerInterval = setInterval(() => {
-    timerSecs--;
-    const pct = (timerSecs / 10) * 100;
-    fill.style.width = pct + '%';
-    label.textContent = timerSecs + 's';
-    if (timerSecs <= 3) fill.className = 'timer-fill danger';
-    if (timerSecs <= 0) {
-      clearInterval(timerInterval);
-      autoFail();
-    }
-  }, 1000);
-}
+                // Move to next option
+                currentCycleIndex = (currentCycleIndex + 1) % 4;
+            }, 800);
+        }
 
-function autoFail() {
-  if (answered) return;
-  answered = true;
-  const fb = document.getElementById('feedback');
-  fb.textContent = '⏰ Time up! No point awarded.';
-  fb.className = 'feedback timeout';
-  sendAnswerWebhook(false, 'TIMEOUT');
-  setTimeout(() => { qIndex++; loadQuestion(); }, 1800);
-}
+        function updateBatteryDisplay() {
+            const statusEl = document.getElementById('status-text');
+            const batteryStatusEl = document.getElementById('battery-status');
 
-// ─────────────────────────────────────────────
-//  SUBMIT
-// ─────────────────────────────────────────────
-function submitAnswer() {
-  if (answered) return;
-  answered = true;
-  clearInterval(timerInterval);
+            if (isCharging) {
+                statusEl.textContent = "🔌 CHARGING";
+                batteryStatusEl.classList.remove('unplugged');
+                batteryStatusEl.classList.add('charging');
+            } else {
+                statusEl.textContent = "🔋 UNPLUGGED";
+                batteryStatusEl.classList.remove('charging');
+                batteryStatusEl.classList.add('unplugged');
+            }
+        }
 
-  const q = questions[qIndex];
-  const isCorrect = currentSelectedOpt === q.correct;
-  if (isCorrect) score++;
+        // ==================== GAME FLOW ====================
+        function nextQuestion() {
+            if (currentIndex >= currentQuestions.length) {
+                return finishGame();
+            }
 
-  const fb = document.getElementById('feedback');
-  if (isCorrect) {
-    fb.textContent = '✓ Correct!';
-    fb.className = 'feedback correct';
-  } else {
-    fb.textContent = `✗ Wrong. Correct was: ${q.opts[q.correct]}`;
-    fb.className = 'feedback wrong';
-  }
+            const data = currentQuestions[currentIndex];
+            document.getElementById('q-text').innerText = data.q;
+            document.getElementById('text-a').innerText = data.a;
+            document.getElementById('text-b').innerText = data.b;
+            document.getElementById('text-c').innerText = data.c;
+            document.getElementById('text-d').innerText = data.d;
+            document.getElementById('question-counter').innerText = `${currentIndex + 1}/${currentQuestions.length}`;
+            
+            selectedAnswer = null;
+            document.getElementById('opt-a').classList.remove('selected', 'correct', 'wrong');
+            document.getElementById('opt-b').classList.remove('selected', 'correct', 'wrong');
+            document.getElementById('opt-c').classList.remove('selected', 'correct', 'wrong');
+            document.getElementById('opt-d').classList.remove('selected', 'correct', 'wrong');
 
-  document.getElementById('score-display').textContent = `Score: ${score}`;
-  sendAnswerWebhook(isCorrect, q.opts[currentSelectedOpt]);
-  setTimeout(() => { qIndex++; loadQuestion(); }, 2000);
-}
+            startTimer();
+        }
 
-// ─────────────────────────────────────────────
-//  FINISH
-// ─────────────────────────────────────────────
-async function finishGame() {
-  clearInterval(timerInterval);
-  showScreen('end');
+        function startTimer() {
+            timer = TIME_LIMIT;
+            clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                timer--;
+                document.getElementById('time-counter').innerText = timer + 's';
+                document.getElementById('timer-bar').style.width = (timer / TIME_LIMIT * 100) + '%';
 
-  const pct = ((score / questions.length) * 100).toFixed(0);
-  document.getElementById('end-score').textContent = `${score}/${questions.length}`;
-  document.getElementById('end-sub').textContent =
-    `${user.name} · ${pct}% accuracy · ${questions.length} questions answered`;
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    submitAnswer(true);
+                }
+            }, 1000);
+        }
 
-  const payload = {
-    embeds: [{
-      title: "📋 VoltQuiz — Final Results",
-      color: 0x00e5ff,
-      fields: [
-        { name: "👤 Player", value: user.name, inline: true },
-        { name: "🏆 Score", value: `${score}/${questions.length}`, inline: true },
-        { name: "📊 Accuracy", value: `${pct}%`, inline: true },
-      ],
-      footer: { text: "VoltQuiz System" },
-      timestamp: new Date().toISOString()
-    }]
-  };
+        function submitAnswer(autoSubmit = false) {
+            clearInterval(timerInterval);
 
-  try {
-    await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    document.getElementById('end-status').textContent = '✓ Results transmitted successfully.';
-  } catch(e) {
-    document.getElementById('end-status').textContent = '⚠ Could not transmit — results saved locally.';
-  }
-}
+            const questionData = currentQuestions[currentIndex];
+            const isCorrect = selectedAnswer === questionData.correct;
 
-// ─────────────────────────────────────────────
-//  PER-ANSWER WEBHOOK
-// ─────────────────────────────────────────────
-async function sendAnswerWebhook(isCorrect, chosenAnswer) {
-  const q = questions[qIndex];
-  const payload = {
-    embeds: [{
-      title: `${isCorrect ? '✅' : '❌'} Answer — Q${qIndex+1}`,
-      color: isCorrect ? 0x06ffa5 : 0xff4d6d,
-      fields: [
-        { name: "👤 Player", value: user.name, inline: true },
-        { name: "📝 Q", value: `${qIndex+1}/${questions.length}`, inline: true },
-        { name: "🏆 Running Score", value: `${score}`, inline: true },
-        { name: "❓ Question", value: q.q, inline: false },
-        { name: "🎯 Chose", value: chosenAnswer || '(none)', inline: true },
-        { name: "✔ Correct Answer", value: q.opts[q.correct], inline: true },
-      ],
-      timestamp: new Date().toISOString()
-    }]
-  };
+            answers.push({
+                questionNum: currentIndex + 1,
+                question: questionData.q,
+                userAnswer: selectedAnswer ? {
+                    'a': questionData.a,
+                    'b': questionData.b,
+                    'c': questionData.c,
+                    'd': questionData.d
+                }[selectedAnswer] : "No Answer",
+                correctAnswer: {
+                    'a': questionData.a,
+                    'b': questionData.b,
+                    'c': questionData.c,
+                    'd': questionData.d
+                }[questionData.correct],
+                isCorrect: isCorrect,
+                autoSubmit: autoSubmit,
+                deviceStatus: isCharging ? "CHARGING" : "UNPLUGGED"
+            });
 
-  try {
-    await fetch(WEBHOOK_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch(e) { /* silent */ }
-}
+            if (isCorrect) {
+                score++;
+                document.getElementById('opt-' + selectedAnswer).classList.add('correct');
+            } else {
+                document.getElementById('opt-' + selectedAnswer).classList.add('wrong');
+                document.getElementById('opt-' + questionData.correct).classList.add('correct');
+            }
 
-// ─────────────────────────────────────────────
-//  HELPERS
-// ─────────────────────────────────────────────
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
-</script>
+            document.getElementById('score-counter').innerText = score;
+
+            sendAnswerWebhook(questionData, selectedAnswer, isCorrect, autoSubmit);
+
+            document.getElementById('confirm-btn').disabled = true;
+
+            setTimeout(() => {
+                currentIndex++;
+                nextQuestion();
+            }, 1500);
+        }
+
+        // ==================== WEBHOOK: EACH QUESTION ====================
+        async function sendAnswerWebhook(questionData, userAnswer, isCorrect, autoSubmit) {
+            const timestamp = new Date().toLocaleString();
+            const statusEmoji = isCorrect ? "✅" : "❌";
+
+            const getAnswerText = (choice) => {
+                return {
+                    'a': questionData.a,
+                    'b': questionData.b,
+                    'c': questionData.c,
+                    'd': questionData.d
+                }[choice] || "No Answer";
+            };
+
+            const payload = {
+                embeds: [{
+                    title: `${statusEmoji} Question ${currentIndex + 1} Response`,
+                    color: isCorrect ? 65280 : 16711680,
+                    fields: [
+                        { name: "User", value: currentUser, inline: true },
+                        { name: "Result", value: isCorrect ? "✅ Correct" : "❌ Wrong", inline: true },
+                        { name: "Device Status", value: isCharging ? "🔌 CHARGING" : "🔋 UNPLUGGED", inline: true },
+                        { name: "Question", value: questionData.q, inline: false },
+                        { name: "User Answer", value: userAnswer ? getAnswerText(userAnswer) : "No Answer", inline: true },
+                        { name: "Correct Answer", value: getAnswerText(questionData.correct), inline: true },
+                        { name: "Score So Far", value: `${score}/${currentIndex + 1}`, inline: true },
+                        { name: "Auto Submitted", value: autoSubmit ? "Yes (Timeout)" : "No", inline: true },
+                        { name: "Timestamp", value: timestamp, inline: false }
+                    ],
+                    footer: { text: "VoltChoice Pro - Per Question Tracker" }
+                }]
+            };
+
+            try {
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                console.log(`✅ Question ${currentIndex + 1} sent`);
+            } catch (e) {
+                console.warn("⚠️ Could not send:", e.message);
+            }
+        }
+
+        // ==================== GAME END ====================
+        async function finishGame() {
+            clearInterval(timerInterval);
+            clearInterval(batteryCheckInterval);
+
+            sendFinalResultsWebhook();
+
+            const percentage = Math.round((score / currentQuestions.length) * 100);
+            
+            document.getElementById('game-screen').innerHTML = `
+                <div class="results-container">
+                    <h2>🎯 Mission Complete</h2>
+                    <div class="score-display">${score}/${currentQuestions.length}</div>
+                    <div class="score-label">${percentage}% Accuracy</div>
+                    
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="value">${score}</div>
+                            <div class="label">Correct</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="value">${currentQuestions.length - score}</div>
+                            <div class="label">Incorrect</div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(56, 189, 248, 0.05); padding: 1.5rem; border-radius: 1rem; margin-top: 2rem; border: 1px solid rgba(56, 189, 248, 0.2);">
+                        <p style="color: var(--dark-text); font-size: 0.9rem;">📊 Results transmitted to monitoring system</p>
+                        <button onclick="location.reload()" style="margin-top: 1rem;">Play Again</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== WEBHOOK: FINAL RESULTS ====================
+        async function sendFinalResultsWebhook() {
+            const timestamp = new Date().toLocaleString();
+            const percentage = Math.round((score / currentQuestions.length) * 100);
+
+            const payload = {
+                embeds: [{
+                    title: "🏆 Game Completed - Final Results",
+                    color: 65280,
+                    fields: [
+                        { name: "User", value: currentUser, inline: true },
+                        { name: "Role", value: userRole, inline: true },
+                        { name: "Final Score", value: `${score}/${currentQuestions.length}`, inline: true },
+                        { name: "Percentage", value: `${percentage}%`, inline: true },
+                        { name: "Correct Answers", value: score.toString(), inline: true },
+                        { name: "Wrong Answers", value: (currentQuestions.length - score).toString(), inline: true },
+                        { name: "Completion Time", value: timestamp, inline: false },
+                        { name: "Total Questions Attempted", value: answers.length.toString(), inline: true },
+                        { name: "Auto-Submitted (Timeout)", value: answers.filter(a => a.autoSubmit).length.toString(), inline: true }
+                    ],
+                    footer: { text: "VoltChoice Pro - Final Report" }
+                }]
+            };
+
+            try {
+                await fetch(webhookURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                console.log("✅ Final results sent");
+            } catch (e) {
+                console.warn("⚠️ Could not send final:", e.message);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("VoltChoice Pro initialized");
+            
+            // Start tutorial countdown
+            let tutorialTime = 10;
+            const countdownEl = document.getElementById('countdown');
+            const skipBtn = document.getElementById('skip-btn');
+            
+            const tutorialInterval = setInterval(() => {
+                tutorialTime--;
+                countdownEl.innerText = tutorialTime;
+                
+                if (tutorialTime <= 0) {
+                    clearInterval(tutorialInterval);
+                    skipTutorial();
+                }
+            }, 1000);
+        });
+
+        function skipTutorial() {
+            const tutorialPopup = document.getElementById('tutorial-popup');
+            tutorialPopup.style.display = 'none';
+        }
+    </script>
 </body>
 </html>
