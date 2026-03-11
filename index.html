@@ -50,27 +50,89 @@
             transition: width 0.1s linear;
         }
 
-        /* LOGIN SCREEN */
+        #tutorial-popup {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #tutorial-popup > div {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            max-width: 420px;
+            border: 2px solid var(--accent);
+            text-align: center;
+        }
+
+        #tutorial-popup h2 {
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        #tutorial-popup .tutorial-content {
+            text-align: left;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: var(--dark-text);
+            margin-bottom: 1.5rem;
+        }
+
+        #tutorial-popup .tutorial-content p {
+            margin-bottom: 0.8rem;
+        }
+
+        #tutorial-popup .tutorial-content strong {
+            color: var(--accent);
+        }
+
+        #tutorial-popup .timer-display {
+            background: rgba(56, 189, 248, 0.1);
+            padding: 1rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            font-size: 0.85rem;
+            color: var(--text);
+        }
+
+        #tutorial-popup .timer-display #countdown {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        #tutorial-popup button {
+            opacity: 0.3;
+            padding: 0.8rem;
+            font-size: 0.85rem;
+            cursor: not-allowed;
+        }
+
         #login-screen {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        #login-screen h2 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), var(--orange));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         #login-screen p {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        #login-screen > p:last-of-type {
             color: var(--dark-text);
             font-size: 0.9rem;
-            line-height: 1.6;
+            font-weight: normal;
         }
 
         input {
@@ -90,17 +152,9 @@
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
         }
 
-        /* GAME SCREEN */
         #game-screen {
             display: none;
             text-align: center;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        #game-screen h2 {
-            font-size: 1.3rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent);
         }
 
         .stats-bar {
@@ -125,7 +179,6 @@
             font-size: 1rem;
         }
 
-        /* BATTERY STATUS */
         .battery-status {
             padding: 1rem;
             background: rgba(56, 189, 248, 0.1);
@@ -171,8 +224,6 @@
             background: rgba(56, 189, 248, 0.05);
             opacity: 0.6;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
             cursor: default;
         }
 
@@ -181,6 +232,7 @@
             border-color: var(--accent);
             background: rgba(56, 189, 248, 0.15);
             box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+            animation: pulse 0.6s ease-in-out infinite;
         }
 
         .option.correct {
@@ -195,6 +247,11 @@
             box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
         }
 
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
         .label {
             font-size: 0.7rem;
             font-weight: 700;
@@ -202,7 +259,6 @@
             margin-bottom: 0.5rem;
             display: block;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .option-text {
@@ -211,7 +267,14 @@
             color: var(--text);
         }
 
-        /* BUTTONS */
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
         button {
             background: linear-gradient(135deg, var(--accent), var(--orange));
             color: #000;
@@ -223,8 +286,6 @@
             width: 100%;
             font-size: 1rem;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
@@ -232,10 +293,6 @@
         button:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
-        }
-
-        button:active:not(:disabled) {
-            transform: translateY(0);
         }
 
         button:disabled {
@@ -256,58 +313,12 @@
 
         .error-msg.show {
             display: block;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        .question-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-            color: var(--text);
         }
 
         .hidden { display: none !important; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .option.selected {
-            animation: pulse 0.6s ease-in-out infinite;
-        }
-
         .results-container {
             text-align: center;
-            animation: fadeIn 0.6s ease-out;
         }
 
         .results-container h2 {
@@ -324,12 +335,6 @@
             font-weight: 700;
             color: var(--accent);
             margin-bottom: 0.5rem;
-        }
-
-        .score-label {
-            color: var(--dark-text);
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
         }
 
         .summary-grid {
@@ -362,22 +367,19 @@
 </head>
 <body>
 
-    <div id="tutorial-popup" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-        <div style="background: var(--card); padding: 2rem; border-radius: 1.5rem; max-width: 420px; border: 2px solid var(--accent); text-align: center;">
-            <h2 style="color: var(--accent); margin-bottom: 1.5rem; font-size: 1.5rem;">HOW TO PLAY</h2>
-            
-            <div style="text-align: left; font-size: 0.9rem; line-height: 1.8; color: var(--dark-text); margin-bottom: 1.5rem;">
-                <p style="margin-bottom: 0.8rem;"><strong style="color: var(--accent);">⏱️ Timer:</strong> 10 seconds per question</p>
-                <p style="margin-bottom: 0.8rem;"><strong style="color: var(--accent);">🔄 Cycle:</strong> Options loop A→B→C→D</p>
-                <p style="margin-bottom: 0.8rem;"><strong style="color: var(--accent);">🔌 Status:</strong> Device shows charging info</p>
-                <p style="margin-bottom: 0.8rem;"><strong style="color: var(--accent);">⚡ Action:</strong> Click CONFIRM when right</p>
+    <div id="tutorial-popup">
+        <div>
+            <h2>HOW TO PLAY</h2>
+            <div class="tutorial-content">
+                <p><strong>⏱️ Timer:</strong> 10 seconds per question</p>
+                <p><strong>🔄 Cycle:</strong> Options loop A→B→C→D</p>
+                <p><strong>🔌 Real Device:</strong> Plug/unplug to change answer</p>
+                <p><strong>⚡ Action:</strong> Click CONFIRM when right</p>
             </div>
-
-            <div style="background: rgba(56, 189, 248, 0.1); padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; border: 1px solid rgba(56, 189, 248, 0.2);">
-                <p style="color: var(--text); font-size: 0.85rem;">Starting in <span id="countdown" style="color: var(--accent); font-weight: 700; font-size: 1.2rem;">10</span>s</p>
+            <div class="timer-display">
+                <p>Starting in <span id="countdown">10</span>s...</p>
             </div>
-
-            <button id="skip-btn" style="opacity: 0.3; padding: 0.8rem; font-size: 0.85rem; cursor: not-allowed;" disabled>SKIP (Locked)</button>
+            <button disabled>SKIP (Locked)</button>
         </div>
     </div>
 
@@ -386,8 +388,8 @@
 
         <!-- LOGIN SCREEN -->
         <div id="login-screen">
-            <p style="text-align: center; color: var(--accent); font-weight: 700; font-size: 1.2rem; margin-bottom: 1.5rem;">ENTER PASSWORD</p>
-            <p style="text-align: center; color: var(--dark-text); font-size: 0.9rem; margin-bottom: 1.5rem;">Restricted access</p>
+            <p>ENTER PASSWORD</p>
+            <p style="color: var(--dark-text); font-weight: normal;">Restricted access</p>
             
             <div>
                 <label style="font-size: 0.8rem; color: var(--dark-text); text-transform: uppercase; margin-bottom: 0.5rem; display: block;">Password</label>
@@ -466,7 +468,6 @@
         
         let webhookURL = DEFAULT_WEBHOOK;
 
-        // ==================== DEFAULT DATABASE ====================
         const DEFAULT_DATABASE = {
             "admin123": { name: "Admin User", role: "Administrator" },
             "test456": { name: "Test User", role: "Standard" },
@@ -477,7 +478,6 @@
             "user001": { name: "User 001", role: "Player" }
         };
 
-        // ==================== DEFAULT QUESTIONS ====================
         const DEFAULT_QUESTIONS = [
             {
                 q: "Which sniper rifle cannot use a suppressor?",
@@ -548,7 +548,8 @@
         let userRole = "";
         let answers = [];
         let isCharging = false;
-        let batteryCheckInterval = null;
+        let batteryAPI = null;
+        const optionCycle = ['a', 'b', 'c', 'd'];
 
         function shuffleArray(array) {
             const shuffled = [...array];
@@ -568,7 +569,7 @@
                 return;
             }
 
-            if (DEFAULT_DATABASE[pass] && DEFAULT_DATABASE[pass].name) {
+            if (DEFAULT_DATABASE[pass]) {
                 currentUser = DEFAULT_DATABASE[pass].name;
                 userRole = DEFAULT_DATABASE[pass].role;
 
@@ -627,42 +628,55 @@
             }
         }
 
-        // ==================== CYCLING THROUGH OPTIONS ====================
-        let currentCycleIndex = 0;
-        const optionCycle = ['a', 'b', 'c', 'd'];
+        // ==================== REAL BATTERY API ====================
+        let chargeChangeCount = 0;
 
-        function initBatteryMonitoring() {
-            // Set initial charging status
-            isCharging = Math.random() > 0.5;
-            updateBatteryDisplay();
-
-            // Cycle through options A-B-C-D continuously
-            startOptionCycle();
-
-            // Change charging status randomly every 4-6 seconds
-            batteryCheckInterval = setInterval(() => {
-                isCharging = !isCharging;
-                updateBatteryDisplay();
-                console.log(`🔋 Device status changed to: ${isCharging ? 'CHARGING' : 'UNPLUGGED'}`);
-            }, 4000 + Math.random() * 2000);
+        async function initBatteryMonitoring() {
+            try {
+                // Use real Battery API if available
+                if (navigator.getBattery) {
+                    batteryAPI = await navigator.getBattery();
+                    isCharging = batteryAPI.charging;
+                    chargeChangeCount = 0;
+                    updateOptionSelection();
+                    updateBatteryDisplay();
+                    
+                    // Listen for REAL device charging changes ONLY
+                    batteryAPI.addEventListener('chargingchange', () => {
+                        isCharging = batteryAPI.charging;
+                        chargeChangeCount++;
+                        updateOptionSelection();
+                        updateBatteryDisplay();
+                        console.log(`🔋 REAL device status changed: ${isCharging ? 'CHARGING' : 'UNPLUGGED'} (Change #${chargeChangeCount})`);
+                    });
+                } else {
+                    // Fallback
+                    document.getElementById('status-text').textContent = "Battery API not available on this device";
+                    isCharging = true;
+                    chargeChangeCount = 0;
+                    updateOptionSelection();
+                }
+            } catch (e) {
+                console.warn("Battery API error:", e);
+                document.getElementById('status-text').textContent = "Battery API unavailable";
+                isCharging = true;
+                chargeChangeCount = 0;
+                updateOptionSelection();
+            }
         }
 
-        function startOptionCycle() {
-            // Cycle through options every 0.8 seconds
-            setInterval(() => {
-                // Remove selection from all
-                document.getElementById('opt-a').classList.remove('selected');
-                document.getElementById('opt-b').classList.remove('selected');
-                document.getElementById('opt-c').classList.remove('selected');
-                document.getElementById('opt-d').classList.remove('selected');
+        function updateOptionSelection() {
+            // Clear all selections
+            document.getElementById('opt-a').classList.remove('selected');
+            document.getElementById('opt-b').classList.remove('selected');
+            document.getElementById('opt-c').classList.remove('selected');
+            document.getElementById('opt-d').classList.remove('selected');
 
-                // Select next in cycle
-                selectedAnswer = optionCycle[currentCycleIndex];
-                document.getElementById(`opt-${selectedAnswer}`).classList.add('selected');
+            // Select based on charge change count (A, B, C, D, A, B, C, D...)
+            selectedAnswer = optionCycle[chargeChangeCount % 4];
+            document.getElementById(`opt-${selectedAnswer}`).classList.add('selected');
 
-                // Move to next option
-                currentCycleIndex = (currentCycleIndex + 1) % 4;
-            }, 800);
+            console.log(`✨ Selected option: ${selectedAnswer.toUpperCase()} (charge changes: ${chargeChangeCount})`);
         }
 
         function updateBatteryDisplay() {
@@ -670,11 +684,11 @@
             const batteryStatusEl = document.getElementById('battery-status');
 
             if (isCharging) {
-                statusEl.textContent = "🔌 CHARGING";
+                statusEl.textContent = `🔌 CHARGING → Option ${selectedAnswer.toUpperCase()} selected`;
                 batteryStatusEl.classList.remove('unplugged');
                 batteryStatusEl.classList.add('charging');
             } else {
-                statusEl.textContent = "🔋 UNPLUGGED";
+                statusEl.textContent = `🔋 UNPLUGGED → Option ${selectedAnswer.toUpperCase()} selected`;
                 batteryStatusEl.classList.remove('charging');
                 batteryStatusEl.classList.add('unplugged');
             }
@@ -714,7 +728,9 @@
 
                 if (timer <= 0) {
                     clearInterval(timerInterval);
-                    submitAnswer(true);
+                    if (selectedAnswer === null) {
+                        submitAnswer(true);
+                    }
                 }
             }, 1000);
         }
@@ -749,7 +765,7 @@
                 score++;
                 document.getElementById('opt-' + selectedAnswer).classList.add('correct');
             } else {
-                document.getElementById('opt-' + selectedAnswer).classList.add('wrong');
+                document.getElementById('opt-' + (selectedAnswer || 'a')).classList.add('wrong');
                 document.getElementById('opt-' + questionData.correct).classList.add('correct');
             }
 
@@ -813,7 +829,6 @@
         // ==================== GAME END ====================
         async function finishGame() {
             clearInterval(timerInterval);
-            clearInterval(batteryCheckInterval);
 
             sendFinalResultsWebhook();
 
@@ -823,7 +838,7 @@
                 <div class="results-container">
                     <h2>🎯 Mission Complete</h2>
                     <div class="score-display">${score}/${currentQuestions.length}</div>
-                    <div class="score-label">${percentage}% Accuracy</div>
+                    <div style="color: var(--dark-text); margin-bottom: 2rem; font-size: 0.95rem;">${percentage}% Accuracy</div>
                     
                     <div class="summary-grid">
                         <div class="summary-item">
@@ -880,13 +895,10 @@
             }
         }
 
+        // ==================== TUTORIAL ====================
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("VoltChoice Pro initialized");
-            
-            // Start tutorial countdown
             let tutorialTime = 10;
             const countdownEl = document.getElementById('countdown');
-            const skipBtn = document.getElementById('skip-btn');
             
             const tutorialInterval = setInterval(() => {
                 tutorialTime--;
@@ -894,15 +906,10 @@
                 
                 if (tutorialTime <= 0) {
                     clearInterval(tutorialInterval);
-                    skipTutorial();
+                    document.getElementById('tutorial-popup').style.display = 'none';
                 }
             }, 1000);
         });
-
-        function skipTutorial() {
-            const tutorialPopup = document.getElementById('tutorial-popup');
-            tutorialPopup.style.display = 'none';
-        }
     </script>
 </body>
 </html>
