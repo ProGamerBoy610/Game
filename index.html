@@ -700,6 +700,9 @@
                 return finishGame();
             }
 
+            // RESET CHARGE COUNT FOR NEW QUESTION - START FROM A
+            chargeChangeCount = 0;
+            
             const data = currentQuestions[currentIndex];
             document.getElementById('q-text').innerText = data.q;
             document.getElementById('text-a').innerText = data.a;
@@ -713,6 +716,9 @@
             document.getElementById('opt-b').classList.remove('selected', 'correct', 'wrong');
             document.getElementById('opt-c').classList.remove('selected', 'correct', 'wrong');
             document.getElementById('opt-d').classList.remove('selected', 'correct', 'wrong');
+
+            // Set initial selection to A
+            updateOptionSelection();
 
             startTimer();
         }
@@ -728,11 +734,48 @@
 
                 if (timer <= 0) {
                     clearInterval(timerInterval);
-                    if (selectedAnswer === null) {
-                        submitAnswer(true);
-                    }
+                    autoSubmitTimeout();
                 }
             }, 1000);
+        }
+
+        function autoSubmitTimeout() {
+            const questionData = currentQuestions[currentIndex];
+            
+            // Don't submit if already submitted
+            if (selectedAnswer === null) {
+                selectedAnswer = 'a'; // Default to A if no answer selected
+            }
+
+            answers.push({
+                questionNum: currentIndex + 1,
+                question: questionData.q,
+                userAnswer: {
+                    'a': questionData.a,
+                    'b': questionData.b,
+                    'c': questionData.c,
+                    'd': questionData.d
+                }[selectedAnswer] || "No Answer",
+                correctAnswer: {
+                    'a': questionData.a,
+                    'b': questionData.b,
+                    'c': questionData.c,
+                    'd': questionData.d
+                }[questionData.correct],
+                isCorrect: selectedAnswer === questionData.correct,
+                autoSubmit: true,
+                deviceStatus: isCharging ? "CHARGING" : "UNPLUGGED"
+            });
+
+            sendAnswerWebhook(selectedAnswer === questionData.correct, questionData, selectedAnswer, true);
+
+            document.getElementById('confirm-btn').disabled = true;
+
+            setTimeout(() => {
+                currentIndex++;
+                document.getElementById('confirm-btn').disabled = false;
+                nextQuestion();
+            }, 1500);
         }
 
         function submitAnswer(autoSubmit = false) {
@@ -777,6 +820,7 @@
 
             setTimeout(() => {
                 currentIndex++;
+                document.getElementById('confirm-btn').disabled = false;
                 nextQuestion();
             }, 1500);
         }
